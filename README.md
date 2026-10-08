@@ -1,4 +1,6 @@
-# VivaC#
+<img width="48" height="48" alt="VivaCSharp" src="https://github.com/user-attachments/assets/4c60cf7d-f423-49b4-985c-06c1b92a876b" /> # VivaC#
+
+
 
 [![C#](https://img.shields.io/badge/C%23-.NET%208-512BD4?logo=csharp&logoColor=white)](https://dotnet.microsoft.com/)
 [![WPF](https://img.shields.io/badge/UI-WPF-0078D4?logo=windows&logoColor=white)](https://learn.microsoft.com/dotnet/desktop/wpf/)

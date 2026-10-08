@@ -1,0 +1,864 @@
+﻿<Window x:Class="VivaCSharp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="VivaC# — Open-Source Creative Editor"
+        Background="#111111"
+        Foreground="#E8E8E8"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        WindowStyle="None"
+        ResizeMode="CanResize"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        AllowDrop="True"
+        Loaded="MainWindow_Loaded"
+        SizeChanged="MainWindow_SizeChanged"
+        DragOver="MainWindow_DragOver"
+        Drop="MainWindow_Drop">
+
+    <Window.Resources>
+
+        <SolidColorBrush x:Key="PanelBrush" Color="#181818"/>
+        <SolidColorBrush x:Key="Panel2Brush" Color="#202020"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#303030"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#E8E8E8"/>
+        <SolidColorBrush x:Key="MutedBrush" Color="#8F8F8F"/>
+        <SolidColorBrush x:Key="AccentBrush" Color="#D9A441"/>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#202020"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="BorderBrush" Value="#303030"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="FlatButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#D0D0D0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="9,6"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="WorkspaceButton" TargetType="Button" BasedOn="{StaticResource FlatButton}">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#151515"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="BorderBrush" Value="#303030"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6"/>
+        </Style>
+
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
+            <RowDefinition Height="34"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="265"/>
+            <RowDefinition Height="34"/>
+        </Grid.RowDefinitions>
+
+        <!-- ================================================= -->
+        <!-- TITLE BAR -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="0"
+                Background="#101010"
+                BorderBrush="#292929"
+                BorderThickness="0,0,0,1"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0"
+                           Text="VivaC#"
+                           FontSize="14"
+                           FontWeight="Bold"
+                           Foreground="#FFFFFF"
+                           VerticalAlignment="Center"
+                           Margin="14,0,8,0"/>
+
+                <TextBlock Grid.Column="1"
+                           Text="Open-Source Creative Editor"
+                           FontSize="12"
+                           Foreground="#777777"
+                           VerticalAlignment="Center"/>
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal">
+
+                    <Button Content="—"
+                            Style="{StaticResource FlatButton}"
+                            Click="MinimizeButton_Click"
+                            Width="40"/>
+
+                    <Button Content="□"
+                            Style="{StaticResource FlatButton}"
+                            Click="MaximizeButton_Click"
+                            Width="40"/>
+
+                    <Button Content="✕"
+                            Style="{StaticResource FlatButton}"
+                            Click="CloseButton_Click"
+                            Width="40"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+        <!-- ================================================= -->
+        <!-- TOOLBAR -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="1"
+                Background="#181818"
+                BorderBrush="#2B2B2B"
+                BorderThickness="0,0,0,1">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal">
+
+                    <Button Content="☰"
+                            Style="{StaticResource FlatButton}"
+                            Width="40"/>
+
+                    <Button Content="IMPORT MEDIA"
+                            Click="ImportMediaButton_Click"
+                            FontWeight="SemiBold"/>
+
+                    <Button Content="SAVE"
+                            Style="{StaticResource FlatButton}"
+                            Click="SaveButton_Click"/>
+
+                    <Button Content="EXPORT"
+                            Style="{StaticResource FlatButton}"
+                            Click="ExportButton_Click"/>
+
+                </StackPanel>
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            Margin="0,0,8,0">
+
+                    <TextBlock Text="ZOOM"
+                               Foreground="#777777"
+                               VerticalAlignment="Center"
+                               Margin="8,0"/>
+
+                    <Button Content="−"
+                            Style="{StaticResource FlatButton}"
+                            Click="ZoomOutButton_Click"
+                            Width="30"/>
+
+                    <TextBlock x:Name="ZoomText"
+                               Text="100%"
+                               Width="50"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <Button Content="+"
+                            Style="{StaticResource FlatButton}"
+                            Click="ZoomInButton_Click"
+                            Width="30"/>
+
+                    <Button Content="FIT"
+                            Style="{StaticResource FlatButton}"
+                            Click="FitCanvasButton_Click"/>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
+
+        <!-- ================================================= -->
+        <!-- MAIN WORKSPACE -->
+        <!-- ================================================= -->
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="235"
+                                  MinWidth="190"
+                                  MaxWidth="330"/>
+
+                <ColumnDefinition Width="*"
+                                  MinWidth="350"/>
+
+                <ColumnDefinition Width="285"
+                                  MinWidth="230"
+                                  MaxWidth="400"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ================================================= -->
+            <!-- MEDIA PANEL -->
+            <!-- ================================================= -->
+
+            <Border Grid.Column="0"
+                    Background="{StaticResource PanelBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,0,1,0">
+
+                <Grid Margin="10">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+
+                        <TextBlock Text="MEDIA"
+                                   FontWeight="Bold"
+                                   FontSize="12"/>
+
+                        <Button Content="+"
+                                HorizontalAlignment="Right"
+                                Style="{StaticResource FlatButton}"
+                                Click="ImportMediaButton_Click"
+                                Width="28"
+                                Height="28"/>
+
+                    </Grid>
+
+                    <StackPanel Grid.Row="1"
+                                Margin="0,8,0,8">
+
+                        <TextBox x:Name="MediaSearchBox"
+                                 TextChanged="MediaSearchBox_TextChanged"
+                                 Height="28"/>
+
+                        <TextBlock Text="Search media..."
+                                   Foreground="#666666"
+                                   Margin="7,-22,0,8"
+                                   IsHitTestVisible="False"/>
+
+                    </StackPanel>
+
+                    <ListBox x:Name="MediaList"
+                             Grid.Row="2"
+                             AllowDrop="True"
+                             MouseDoubleClick="MediaList_MouseDoubleClick">
+
+                        <ListBox.ItemsPanel>
+
+                            <ItemsPanelTemplate>
+
+                                <WrapPanel/>
+
+                            </ItemsPanelTemplate>
+
+                        </ListBox.ItemsPanel>
+
+                        <ListBox.ItemTemplate>
+
+                            <DataTemplate>
+
+                                <Border Width="92"
+                                        Height="92"
+                                        Margin="4"
+                                        Background="#202020"
+                                        BorderBrush="#303030"
+                                        BorderThickness="1">
+
+                                    <Grid>
+
+                                        <Image Source="{Binding Thumbnail}"
+                                               Stretch="Uniform"
+                                               Margin="4"/>
+
+                                        <Border VerticalAlignment="Bottom"
+                                                Background="#CC111111">
+
+                                            <TextBlock Text="{Binding Name}"
+                                                       FontSize="9"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Margin="4"/>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                </Border>
+
+                            </DataTemplate>
+
+                        </ListBox.ItemTemplate>
+
+                    </ListBox>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ================================================= -->
+            <!-- CANVAS -->
+            <!-- ================================================= -->
+
+            <Border Grid.Column="1"
+                    Background="#0D0D0D">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="32"/>
+                    </Grid.RowDefinitions>
+
+                    <ScrollViewer x:Name="CanvasScrollViewer"
+                                  Grid.Row="0"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                                  Background="#0B0B0B">
+
+                        <Grid x:Name="CanvasHost"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center">
+
+                            <Border x:Name="EditorCanvasBorder"
+                                    Background="#181818"
+                                    BorderBrush="#333333"
+                                    BorderThickness="1"
+                                    Width="900"
+                                    Height="506">
+
+                                <Grid x:Name="EditorCanvas">
+
+                                    <TextBlock x:Name="CanvasPlaceholder"
+                                               Text="DROP MEDIA HERE"
+                                               Foreground="#4B4B4B"
+                                               FontSize="20"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+
+                                    <Image x:Name="CanvasImage"
+                                           Stretch="Uniform"
+                                           Visibility="Collapsed"/>
+
+                                </Grid>
+
+                            </Border>
+
+                        </Grid>
+
+                    </ScrollViewer>
+
+                    <Border Grid.Row="1"
+                            Background="#151515"
+                            BorderBrush="#292929"
+                            BorderThickness="0,1,0,0">
+
+                        <Grid>
+
+                            <TextBlock Text="CANVAS"
+                                       Foreground="#777777"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+
+                            <TextBlock x:Name="CanvasResolutionText"
+                                       Text="900 × 506"
+                                       Foreground="#777777"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Margin="10,0"/>
+
+                        </Grid>
+
+                    </Border>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ================================================= -->
+            <!-- INSPECTOR -->
+            <!-- ================================================= -->
+
+            <Border Grid.Column="2"
+                    Background="{StaticResource PanelBrush}"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="1,0,0,0">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                    <StackPanel Margin="12">
+
+                        <TextBlock Text="INSPECTOR"
+                                   FontWeight="Bold"
+                                   FontSize="12"
+                                   Margin="0,0,0,12"/>
+
+                        <TextBlock Text="TRANSFORM"
+                                   Foreground="#777777"
+                                   FontSize="10"
+                                   FontWeight="Bold"/>
+
+                        <Grid Margin="0,8,0,16">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="34"/>
+                                <RowDefinition Height="34"/>
+                                <RowDefinition Height="34"/>
+                                <RowDefinition Height="34"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="65"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="0"
+                                       Text="X"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox Grid.Row="0"
+                                     Grid.Column="1"
+                                     Text="0"/>
+
+                            <TextBlock Grid.Row="1"
+                                       Text="Y"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox Grid.Row="1"
+                                     Grid.Column="1"
+                                     Text="0"/>
+
+                            <TextBlock Grid.Row="2"
+                                       Text="Scale"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox Grid.Row="2"
+                                     Grid.Column="1"
+                                     Text="100%"/>
+
+                            <TextBlock Grid.Row="3"
+                                       Text="Rotation"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox Grid.Row="3"
+                                     Grid.Column="1"
+                                     Text="0°"/>
+
+                        </Grid>
+
+                        <TextBlock Text="OPACITY"
+                                   Foreground="#777777"
+                                   FontSize="10"
+                                   FontWeight="Bold"/>
+
+                        <Slider Minimum="0"
+                                Maximum="100"
+                                Value="100"
+                                Margin="0,8,0,16"/>
+
+                        <TextBlock Text="COLOR"
+                                   Foreground="#777777"
+                                   FontSize="10"
+                                   FontWeight="Bold"/>
+
+                        <Grid Margin="0,8">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="34"/>
+                                <RowDefinition Height="34"/>
+                                <RowDefinition Height="34"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Brightness"
+                                       VerticalAlignment="Center"/>
+
+                            <Slider Grid.Row="0"
+                                    Margin="85,0,0,0"
+                                    Minimum="-100"
+                                    Maximum="100"/>
+
+                            <TextBlock Grid.Row="1"
+                                       Text="Contrast"
+                                       VerticalAlignment="Center"/>
+
+                            <Slider Grid.Row="1"
+                                    Margin="85,0,0,0"
+                                    Minimum="-100"
+                                    Maximum="100"/>
+
+                            <TextBlock Grid.Row="2"
+                                       Text="Saturation"
+                                       VerticalAlignment="Center"/>
+
+                            <Slider Grid.Row="2"
+                                    Margin="85,0,0,0"
+                                    Minimum="-100"
+                                    Maximum="100"/>
+
+                        </Grid>
+
+                        <TextBlock Text="LAYER"
+                                   Foreground="#777777"
+                                   FontSize="10"
+                                   FontWeight="Bold"
+                                   Margin="0,16,0,8"/>
+
+                        <ListBox x:Name="LayerList"
+                                 Height="150">
+
+                        </ListBox>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
+
+        <!-- ================================================= -->
+        <!-- TIMELINE -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="3"
+                Background="#141414"
+                BorderBrush="#303030"
+                BorderThickness="0,1,0,0">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="34"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Timeline toolbar -->
+
+                <Border Grid.Row="0"
+                        Background="#191919"
+                        BorderBrush="#292929"
+                        BorderThickness="0,0,0,1">
+
+                    <Grid>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button Grid.Column="0"
+                                Content="▶"
+                                Style="{StaticResource FlatButton}"
+                                Click="PlayButton_Click"
+                                Width="38"/>
+
+                        <Button Grid.Column="1"
+                                Content="■"
+                                Style="{StaticResource FlatButton}"
+                                Click="StopButton_Click"
+                                Width="38"/>
+
+                        <Button Grid.Column="2"
+                                Content="◀|"
+                                Style="{StaticResource FlatButton}"
+                                Click="PreviousFrameButton_Click"
+                                Width="45"/>
+
+                        <TextBlock Grid.Column="3"
+                                   x:Name="TimecodeText"
+                                   Text="00:00:00:00"
+                                   Foreground="#BDBDBD"
+                                   VerticalAlignment="Center"
+                                   Margin="12,0"/>
+
+                        <TextBlock Grid.Column="4"
+                                   Text="24 FPS"
+                                   Foreground="#666666"
+                                   VerticalAlignment="Center"
+                                   Margin="12"/>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- Timeline -->
+
+                <Grid Grid.Row="1">
+
+                    <Grid.ColumnDefinitions>
+
+                        <ColumnDefinition Width="68"/>
+
+                        <ColumnDefinition Width="*"/>
+
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Track labels -->
+
+                    <Border Grid.Column="0"
+                            Background="#191919"
+                            BorderBrush="#292929"
+                            BorderThickness="0,0,1,0">
+
+                        <StackPanel>
+
+                            <Border Height="38"
+                                    BorderBrush="#292929"
+                                    BorderThickness="0,0,0,1">
+
+                                <TextBlock Text="V3"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+
+                            </Border>
+
+                            <Border Height="38"
+                                    BorderBrush="#292929"
+                                    BorderThickness="0,0,0,1">
+
+                                <TextBlock Text="V2"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+
+                            </Border>
+
+                            <Border Height="38"
+                                    BorderBrush="#292929"
+                                    BorderThickness="0,0,0,1">
+
+                                <TextBlock Text="V1"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+
+                            </Border>
+
+                            <Border Height="38"
+                                    BorderBrush="#292929"
+                                    BorderThickness="0,0,0,1">
+
+                                <TextBlock Text="A2"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+
+                            </Border>
+
+                            <Border Height="38">
+
+                                <TextBlock Text="A1"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"/>
+
+                            </Border>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <!-- Track area -->
+
+                    <ScrollViewer Grid.Column="1"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Disabled">
+
+                        <Canvas x:Name="TimelineCanvas"
+                                Background="#101010"
+                                Height="190"
+                                MinWidth="1200"
+                                AllowDrop="True"
+                                DragOver="Timeline_DragOver"
+                                Drop="Timeline_Drop">
+
+                            <!-- Time ruler -->
+
+                            <Canvas.Resources>
+
+                                <Style TargetType="TextBlock">
+
+                                    <Setter Property="Foreground"
+                                            Value="#555555"/>
+
+                                    <Setter Property="FontSize"
+                                            Value="9"/>
+
+                                </Style>
+
+                            </Canvas.Resources>
+
+                            <Line X1="0"
+                                  Y1="25"
+                                  X2="2000"
+                                  Y2="25"
+                                  Stroke="#292929"/>
+
+                            <TextBlock Text="00:00"
+                                       Canvas.Left="10"
+                                       Canvas.Top="5"/>
+
+                            <TextBlock Text="00:05"
+                                       Canvas.Left="210"
+                                       Canvas.Top="5"/>
+
+                            <TextBlock Text="00:10"
+                                       Canvas.Left="410"
+                                       Canvas.Top="5"/>
+
+                            <TextBlock Text="00:15"
+                                       Canvas.Left="610"
+                                       Canvas.Top="5"/>
+
+                            <TextBlock Text="00:20"
+                                       Canvas.Left="810"
+                                       Canvas.Top="5"/>
+
+                            <!-- Track separators -->
+
+                            <Line X1="0"
+                                  Y1="63"
+                                  X2="2000"
+                                  Y2="63"
+                                  Stroke="#292929"/>
+
+                            <Line X1="0"
+                                  Y1="101"
+                                  X2="2000"
+                                  Y2="101"
+                                  Stroke="#292929"/>
+
+                            <Line X1="0"
+                                  Y1="139"
+                                  X2="2000"
+                                  Y2="139"
+                                  Stroke="#292929"/>
+
+                            <Line X1="0"
+                                  Y1="177"
+                                  X2="2000"
+                                  Y2="177"
+                                  Stroke="#292929"/>
+
+                            <!-- Playhead -->
+
+                            <Line x:Name="Playhead"
+                                  X1="20"
+                                  Y1="25"
+                                  X2="20"
+                                  Y2="190"
+                                  Stroke="#D9A441"
+                                  StrokeThickness="2"/>
+
+                        </Canvas>
+
+                    </ScrollViewer>
+
+                </Grid>
+
+            </Grid>
+
+        </Border>
+
+        <!-- ================================================= -->
+        <!-- WORKSPACE BAR -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="4"
+                Background="#101010"
+                BorderBrush="#292929"
+                BorderThickness="0,1,0,0">
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+
+                <Button Content="MEDIA"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+                <Button Content="EDIT"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+                <Button Content="COLOR"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+                <Button Content="EFFECTS"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+                <Button Content="AUDIO"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+                <Button Content="EXPORT"
+                        Style="{StaticResource WorkspaceButton}"/>
+
+            </StackPanel>
+
+        </Border>
+
+        <!-- ================================================= -->
+        <!-- DROP OVERLAY -->
+        <!-- ================================================= -->
+
+        <Border x:Name="DropOverlay"
+                Grid.RowSpan="5"
+                Background="#CC0B0B0B"
+                Visibility="Collapsed">
+
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+
+                <TextBlock Text="IMPORT MEDIA"
+                           FontSize="28"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Drop images, videos, or audio files here"
+                           Foreground="#999999"
+                           FontSize="14"
+                           Margin="0,10,0,0"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>
